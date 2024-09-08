@@ -10,8 +10,27 @@ const props = defineProps({
 })
 
 const selectedQuery = ref({});
+const searchQuery = ref("");
 
 const filteredCountries = computed(() => {
+    if (searchQuery.value) {
+        return countries.filter((country) => {
+            const searchLower = searchQuery.value.toString().toLocaleLowerCase();
+            let foundMatch = false;
+            const checkObject = (obj) => {
+                Object.keys(obj).forEach((key) => {
+                    const value = obj[key];
+                    if (typeof value == 'string' || typeof value == 'number') {
+                        if (value.toString().toLowerCase().includes(searchLower)) {
+                            foundMatch = true;
+                        }
+                    }
+                })
+            }
+            checkObject(country);
+            return foundMatch;
+        })
+    }
     return countries;
 })
 
@@ -54,7 +73,7 @@ watch(() => props.defaultCountry, () => {
                             d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
                     </svg>
                 </div>
-                <input type="text" id="input-group-search"
+                <input type="text" v-model="searchQuery" id="input-group-search"
                     class="block w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg ps-10 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     placeholder="Search user">
             </div>
